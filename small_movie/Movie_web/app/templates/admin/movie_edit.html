@@ -1,0 +1,235 @@
+{% extends 'admin/admin.html' %}
+{% import 'ui/play.html' as play %}
+
+{% block css %}
+    <!--播放页面-->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dplayer/dist/DPlayer.min.css') }}">
+    <style>
+        .dplayer-comment-setting-type > label {
+            display: inline;
+        }
+    </style>
+    <!--播放页面-->
+{% endblock %}
+
+
+{% block content %}
+    <!--内容-->
+    <section class="content-header">
+        <h1>微电影管理系统</h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> 电影管理</a></li>
+            <li class="active">编辑电影</li>
+        </ol>
+    </section>
+    <section class="content" id="showcontent">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">编辑电影</h3>
+                    </div>
+                    <form role="form" method="post" enctype="multipart/form-data">
+                        <div class="box-body">
+                            {% for message in get_flashed_messages(category_filter=["ok"]) %}
+                                <div class="alert alert-success alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert"
+                                            aria-hidden="true"></button>
+                                    <h4><i class="icon fa fa-check"></i>操作成功</h4>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                            {% for message in get_flashed_messages(category_filter=["error"]) %}
+                                <div class="alert alert-danger alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert"
+                                            aria-hidden="true"></button>
+                                    <h4><i class="icon fa fa-ban"></i>操作失败</h4>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                            <div class="form-group">
+                                <label for="input_title">{{ form.title.label }}</label>
+                                {{ form.title(value=movie.title) }}
+                                {% for error in form.title.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color: red">{{ error }}</font>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                <label for="input_url">{{ form.url.label }}</label>
+                                {{ form.url(value=movie.url) }}
+                                {% for error in form.url.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color: red">{{ error }}</font>
+                                    </div>
+                                {% endfor %}
+                                <div style="margin-top:5px;">
+                                    <div id="dplayer" style="height: 500px;width: 774px"></div>
+                                    <!--div id="moviecontainer"></div-->
+                                </div>
+                            </div>
+{#                            <div class="form-group">#}
+{#                                <label for="input_info">{{ form.info.label }}</label>#}
+{#                                {{ form.info }}#}
+{#                                {% for error in form.info.errors %}#}
+{#                                    <div class="col-md-12">#}
+{#                                        <font style="color: red">{{ error }}</font>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+                            <div class="form-group">
+                                <label for="input_logo">{{ form.logo.label }}</label>
+                                {{ form.logo(value=movie.logo) }}
+                                {% for error in form.logo.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color: red">{{ error }}</font>
+                                    </div>
+                                {% endfor %}
+                                <img src="{{ url_for('static', filename='uploads/'+movie.logo) }}"
+                                     style="width:400px;" class="img-responsive"
+                                     alt="">
+                            </div>
+{#                            <div class="form-group">#}
+{#                                <label for="input_star">{{ form.star.label }}</label>#}
+{#                                {{ form.star(value=movie.star) }}#}
+{#                                {% for error in form.star.errors %}#}
+{#                                    <div class="col-md-12">#}
+{#                                        <font style="color: red">{{ error }}</font>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+                            <div class="form-group">
+                                <label for="input_tag_id">{{ form.tag_id.label }}</label>
+                                {{ form.tag_id(value=movie.tag.title) }}
+                                {% for error in form.tag_id.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color: red">{{ error }}</font>
+                                    </div>
+                                {% endfor %}
+                            </div>
+{#                            <div class="form-group">#}
+{#                                <label for="input_area">{{ form.area.label }}</label>#}
+{#                                {{ form.area(value=movie.area) }}#}
+{#                                {% for error in form.area.errors %}#}
+{#                                    <div class="col-md-12">#}
+{#                                        <font style="color: red">{{ error }}</font>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                            <div class="form-group">#}
+{#                                <label for="input_length">{{ form.length.label }}</label>#}
+{#                                {{ form.length(value=movie.length) }}#}
+{#                                {% for error in form.length.errors %}#}
+{#                                    <div class="col-md-12">#}
+{#                                        <font style="color: red">{{ error }}</font>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+{#                            <div class="form-group">#}
+{#                                <label for="input_release_time">{{ form.release_time.label }}</label>#}
+{#                                {{ form.release_time(value=movie.release_time) }}#}
+{#                                <input name="id" value="{{ movie.id }}" type="hidden">#}
+{#                                {% for error in form.release_time.errors %}#}
+{#                                    <div class="col-md-12">#}
+{#                                        <font style="color: red">{{ error }}</font>#}
+{#                                    </div>#}
+{#                                {% endfor %}#}
+{#                            </div>#}
+                        <div class="form-group">
+                                <label for="input_movie_head">{{ form.movie_head.label }}</label>
+                                {{ form.movie_head }}
+                                {% for error in form.movie_head.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color: red">{{ error }}</font>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="form-group">
+                                <label for="input_movie_tail">{{ form.movie_tail.label }}</label>
+                                {{ form.movie_tail }}
+                                {% for error in form.movie_tail.errors %}
+                                    <div class="col-md-12">
+                                        <font style="color: red">{{ error }}</font>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="box-footer">
+                            {{ form.csrf_token }}
+                            {{ form.submit }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--内容-->
+{% endblock %}
+
+{% block js %}
+    <!--播放页面-->
+    <script src="{{ url_for('static', filename='dplayer/dist/flv.js/src/flv.js') }}"></script>
+    <script src="{{ url_for('static', filename='dplayer/dist/DPlayer.min.js') }}"></script>
+    <script>
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            autoplay: false,
+            theme: '#FADFA3',
+            loop: true,
+            lang: 'zh-cn',
+            screenshot: false,
+            hotkey: false,
+            preload: 'auto',
+            {#logo: "{{ url_for('static', filename='uploads/Movie_Cover/'+movie.logo) }}",#}
+            volume: 0.7,
+            mutex: true,
+            video: {
+                url: "{{ url_for('static', filename='uploads/Movie/'+movie.url) }}",
+                pic: "{{ url_for('static', filename='uploads/Movie_Cover/'+movie.logo) }}",
+                {#thumbnails: 'thumbnails.jpg',#}
+                type: 'auto'
+            },
+            subtitle: {
+                url: 'dplayer.vtt',
+                type: 'webvtt',
+                fontSize: '25px',
+                bottom: '10%',
+                color: '#b7daff'
+            },
+            danmaku: {
+                id: '{{ movie.id }}',
+                api: '/barrage/',
+                token: 'tokendemo',
+                maximum: 3000,
+                {#addition: ['https://api.prprpr.me/dplayer/v3/bilibili?aid=4157142'],#}
+                user: 'DIYgod',
+                bottom: '15%',
+                unlimited: true
+            },
+            contextmenu: [
+                {
+                    text: 'custom1',
+                    link: 'https://github.com/DIYgod/DPlayer'
+                },
+                {
+                    text: 'custom2',
+                    click: (player) => {
+                        console.log(player);
+                    }
+                }
+            ],
+            highlight: [
+                {
+                    text: 'marker for 20s',
+                    time: 20
+                },
+                {
+                    text: 'marker for 2mins',
+                    time: 120
+                }
+            ]
+        });
+    </script>
+    <!--播放页面-->
+{% endblock %}
